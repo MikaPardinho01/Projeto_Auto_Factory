@@ -1,44 +1,38 @@
 #include <Arduino.h>
 #include "iot.h"
-#include <DHTesp.h>
 #include "saidas.h"
 #include "entradas.h"
 #include "tempo.h"
-#define mqtt_topic2 "led6"
-#define mqtt_topic1 "led3"
+#include "dht22.h"
 
-DHTesp dht;
+#define mqtt_pub_topic1 "temperatura"
+#define mqtt_pub_topic2 "umidade"
 
-void acao_botao_boot();
 
-void setup() {
+//* Protótipos das funções do main.cpp
+
+void setup_dht();
+
+
+void setup()
+{
   Serial.begin(115200);
   setup_wifi();
   setup_time();
   inicializa_entradas();
   inicializa_saidas();
   inicializa_mqtt();
+  setup_dht();
 }
 
 
-void loop() {
+void loop()
+{
   atualiza_time();
   atualiza_saidas();
   atualiza_botoes();
   atualiza_mqtt();
-  acao_botao_boot();
-}
+  dht_temperatura();
+  dht_umidade();
 
-void acao_botao_boot() {
-  if (botao_boot_pressionado()) {
-    LedBuiltInState = !LedBuiltInState;
-    if(LedBuiltInState) publica_mqtt(mqtt_topic1, "Ligado");
-    else publica_mqtt(mqtt_topic1, "Desligado");
-  }
-
-  else if (botao_boot_pressionado1()) {
-   Led_built_InState = !Led_built_InState;
-  if(LedBuiltInState) publica_mqtt(mqtt_topic2, "Ligado");
-  else publica_mqtt(mqtt_topic2, "Desligado");
-  }
 }
