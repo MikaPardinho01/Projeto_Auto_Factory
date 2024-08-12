@@ -1,10 +1,13 @@
 #include <Arduino.h>
 #include "iot.h"
+#include <DHTesp.h>
 #include "saidas.h"
 #include "entradas.h"
 #include "tempo.h"
 #define mqtt_topic2 "led6"
 #define mqtt_topic1 "led3"
+
+DHTesp dht;
 
 void acao_botao_boot();
 
