@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../PlatformIO/Projects/Iot2024co"
+		},
+		{
+			"name": "Display_mapa",
+			"path": "../../PlatformIO/Projects/Display_mapa"
+		}
+	],
+	"settings": {}
+}
