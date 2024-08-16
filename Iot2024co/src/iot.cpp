@@ -17,12 +17,14 @@ void callback(char *topic, byte *payload, unsigned int length);
 void reconecta_mqtt();
 
 //Inicia a conexão WiFi
-void setup_wifi() {
+void setup_wifi() 
+{
   Serial.println();
   Serial.print("Conectando-se a Rede WiFi ");
   Serial.print(ssid);
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED) 
+  {
     delay(500);
     Serial.print(".");
   }
@@ -38,14 +40,17 @@ void inicializa_mqtt() {
   client.setCallback(callback);
 }
 
-void atualiza_mqtt() { 
+void atualiza_mqtt()
+{ 
   client.loop();
-  if (!client.connected()) {
+  if (!client.connected())
+  {
     reconecta_mqtt();
   }
 }
 
-void callback(char *topic, byte *payload, unsigned int length) {
+void callback(char *topic, byte *payload, unsigned int length) 
+{
   Serial.printf("Mensagem recebida [ %s ] \n\r", topic);
   String msg = "";
   for (int i = 0; i < length; i++) {
@@ -57,11 +62,14 @@ void callback(char *topic, byte *payload, unsigned int length) {
 tratar_msg(topic, msg);
 }
 
-void reconecta_mqtt() {
-  while (!client.connected()) {
+void reconecta_mqtt() 
+{
+  while (!client.connected()) 
+  {
     Serial.print("Tentando se conectar ao Broker MQTT: ");
     Serial.println(mqtt_server);
-    if (client.connect(cliente_id)) {
+    if (client.connect(cliente_id)) 
+    {
       Serial.println("Conectado ao Broker MQTT");
       client.subscribe(mqtt_topic1);
       client.subscribe(mqtt_topic2);
@@ -74,20 +82,27 @@ void reconecta_mqtt() {
   }
 }
 
-void tratar_msg(char *topic, String msg) {
-if(strcmp(topic, mqtt_topic1) == 0) {
-    if(msg == "ligar") {
+void tratar_msg(char *topic, String msg) 
+{
+if(strcmp(topic, mqtt_topic1) == 0)
+{
+    if(msg == "ligar")
+    {
       LedBuiltInState = true;
     }
-    else if (msg == "desligar") {
+    else if (msg == "desligar") 
+    {
       LedBuiltInState = false;
     }      
   }
-if(strcmp(topic, mqtt_topic2) == 0) {
-    if(msg == "ligar") {
+if(strcmp(topic, mqtt_topic2) == 0) 
+{
+    if(msg == "ligar") 
+    {
       Led_built_InState = true;
     }
-    else if (msg == "desligar") {
+    else if (msg == "desligar") 
+    {
       Led_built_InState = false;
     }      
     
