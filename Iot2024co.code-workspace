@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../PlatformIO/Projects/Iot2024co"
+		},
+		{
+			"name": "Testes_antes_projeto",
+			"path": "../../PlatformIO/Projects/Testes_antes_projeto"
+		}
+	],
+	"settings": {}
+}
