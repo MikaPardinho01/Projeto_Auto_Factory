@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../PlatformIO/Projects/Iot2024c"
+		},
+		{
+			"name": "tanto",
+			"path": "../../PlatformIO/Projects/tanto"
+		}
+	],
+	"settings": {}
+}
