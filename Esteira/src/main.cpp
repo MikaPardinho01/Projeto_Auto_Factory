@@ -3,7 +3,7 @@
 #include <Stepper.h> // incluir motor de passo
 
 const int stepsPerRevolution = 2048;  // é o número de passos que um motor de passo deve dar para completar uma volta completa de 360 graus.
-
+// Bom dia
 // *===== DEFINICOES ======
 // Pins setados no motor de passo
 #define IN1 19
