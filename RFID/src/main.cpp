@@ -8,10 +8,54 @@
 
 //**Bibliotecas*/
 #include <Arduino.h>
+#include <ArduinoJson.h>
+#include <WiFi.h>
+#include <PubSubClient.h>
 #include <SPI.h>
 #include <MFRC522.h>
 #include <Servo.h>
 #include <U8g2lib.h>
+#include "senhas.h"
+
+//* Definição dos tópicos de inscrição */
+#define mqtt_topic1 ""
+
+//* Definição do ID do cliente MQTT randomico */
+const String cliente_id = "ESP32Client" + String(random(0xffff), HEX);
+
+//* Definição dos dados de conexão */
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+//* Protótipos das funções */
+void tratar_msg(char *topic, String msg);
+void callback(char *topic, byte *payload, unsigned int length);
+void reconecta_mqtt();
+void inscricao_topicos();
+
+//* Inicia a conexão WiFi */
+void setup_wifi()
+{
+  Serial.println();
+  Serial.print("Conectando-se a Rede WiFi ");
+  Serial.print(ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+  Serial.print("Conectado ao WiFi com sucesso com IP: ");
+  Serial.println(WiFi.localIP());
+}
+
+//* Inicia a conexão MQTT */
+void inicializa_mqtt()
+{
+  client.setServer(mqtt_server, mqtt_port);
+  client.setCallback(callback);
+}
 
 //**Definições*/
 #define SS_PIN 5
@@ -29,6 +73,7 @@ Servo servoMotor = Servo();
 
 //*Prototipos**/
 unsigned long lerRFID(void);
+void enviarJson(unsigned long uid, const char* status, const char* mensagem);
 
 //**Configuração*/
 void setup()
@@ -69,6 +114,7 @@ void loop()
       u8g2.sendBuffer();
 
       servoMotor.write(servo, 90);
+      enviarJson(uid, "Acesso liberado", "Cartão 1");
       break;
 
     case UID3:
@@ -80,6 +126,7 @@ void loop()
       u8g2.sendBuffer();
 
     servoMotor.write(servo, 0);
+    enviarJson(uid, "Acesso liberado", "Cartão 3");
     break;
 
     default:
@@ -88,6 +135,7 @@ void loop()
       u8g2.setFont(u8g2_font_efraneextracondensed_te);
       u8g2.drawStr(15, 25, "cartão não cadastrado");
       u8g2.sendBuffer();
+      enviarJson(uid, "Acesso negado", "Cartão não cadastrado");
       break;
     }
   }
@@ -116,4 +164,18 @@ unsigned long lerRFID()
   }
 
   return numericUID;
+}
+void enviarJson(unsigned long uid, const char* status, const char* mensagem)
+{
+  JsonDocument doc;
+  doc["UID"] = uid;
+  doc["status"] = status;
+  doc["mensagem"] = mensagem;
+
+  // Serialize the JSON document to a string
+  String jsonString;
+  serializeJson(doc, jsonString);
+
+  // Send the JSON string over the Serial
+  Serial.println(jsonString);
 }
