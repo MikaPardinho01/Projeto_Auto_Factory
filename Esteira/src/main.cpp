@@ -6,6 +6,8 @@ const int stepsPerRevolution = 2048;  // é o número de passos que um motor de 
 // Bom dia
 
 // Bom dia kaue
+
+// bom dia brunooooo
 // *===== DEFINICOES ======
 // Pins setados no motor de passo
 #define IN1 19
