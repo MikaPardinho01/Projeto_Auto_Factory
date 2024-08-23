@@ -2,10 +2,9 @@
 #include <Arduino.h>
 #include <Stepper.h> // incluir motor de passo
 
-const int stepsPerRevolution = 2048;  // é o número de passos que um motor de passo deve dar para completar uma volta completa de 360 graus.
-// Bom dia
+const int stepsPerRevolution = 2048; // é o número de passos que um motor de passo deve dar para completar uma volta completa de 360 graus.
+#define mqtt_pub_topic1 "projetoKaue/AutoFactory/Esteira"
 
-// Bom dia kaue
 // *===== DEFINICOES ======
 // Pins setados no motor de passo
 #define IN1 19
@@ -15,19 +14,24 @@ const int stepsPerRevolution = 2048;  // é o número de passos que um motor de 
 
 // *===== OBJETOS ========
 // inicializar a biblioteca do motor (stepper)
-Stepper myStepper(stepsPerRevolution, IN1, IN3, IN2, IN4);
 
-void setup() 
+void setup()
 {
-  // define a velocidade em 5 rpm (é uma medida de quantas voltas completas um objeto ou motor faz em um minuto.)
-  myStepper.setSpeed(5);
   Serial.begin(115200);
+  inicializa_motor();
 }
 
-void loop() 
+void loop()
 {
-  // passo uma revolução em uma direção:
-  Serial.println("sentido_horário");
-  myStepper.step(stepsPerRevolution);
-  delay(1000);
+  unsigned long currentMillis = millis(); // obtém o tempo atual em milissegundos
+
+  if (currentMillis - previousMillis >= Intervalo)
+  {
+    // salva o tempo atual
+    previousMillis = currentMillis;
+
+    // passo uma revolução em uma direção:
+    Serial.println("sentido_horário");
+    myStepper.step(stepsPerRevolution);
+  }
 }
