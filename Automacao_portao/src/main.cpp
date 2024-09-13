@@ -1,43 +1,33 @@
 #include <Arduino.h>
-#include <Servo.h>
-#include <Bounce2.h>
+#include <ArduinoJson.h>
+#include "iot.h"
+#include "atuadores.h"
 
-#define pinServo 15
-#define pinBotao 22
+#define mqtt_pub_topic1 "projetoKaue/AutoFactory/Servo/Portao"
 
-Servo spinning;
-Bounce botao = Bounce();
-
-bool ativacao = false;
-bool servoInicio = false;
+unsigned long tempo_anterior = 0;
+const unsigned long intervalo = 1000;
 
 void setup()
 {
-  botao.attach(pinBotao, INPUT_PULLUP);
-
-  Serial.begin(9600);
-  spinning.attach(pinServo);
-
-  spinning.write(pinServo, 90); 
-  delay(500);
-  servoInicio = true;
+  Serial.begin(115200);
+  setup_wifi();
+  inicializa_mqtt();
+  inicializa_servo();
 }
 
 void loop()
 {
-  botao.update();
-  if (botao.changed() && botao.read() == HIGH) 
+  atualiza_mqtt();
+  rotacao_servo();
+
+  if (millis() - tempo_anterior >= intervalo)
   {
-    ativacao = !ativacao; 
-    if (ativacao)
-    {
-      spinning.write(pinServo, 90); 
-      delay(50);
-    }
-    else
-    {
-      spinning.write(pinServo, 0); 
-      delay(50);
-    }
+    tempo_anterior = millis();
+    String json;
+    JsonDocument doc;
+    doc["PortaoState"] = estado;
+    serializeJson(doc, json);
+    publica_mqtt(mqtt_pub_topic1, json);
   }
 }
