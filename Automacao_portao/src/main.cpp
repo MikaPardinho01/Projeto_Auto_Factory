@@ -1,43 +1,29 @@
 #include <Arduino.h>
-#include <Servo.h>
-#include <Bounce2.h>
+#include <ArduinoJson.h>
+#include "iot.h"
+#include "atuadores.h"
 
-#define pinServo 15
-#define pinBotao 22
+#define mqtt_pub_topic1 "projeto/servo/portao"
 
-Servo spinning;
-Bounce botao = Bounce();
-
-bool ativacao = false;
-bool servoInicio = false;
+unsigned long tempo_anterior = 0;
+const unsigned long intervalo = 1000;
 
 void setup()
 {
-  botao.attach(pinBotao, INPUT_PULLUP);
-
-  Serial.begin(9600);
-  spinning.attach(pinServo);
-
-  spinning.write(pinServo, 90); 
-  delay(500);
-  servoInicio = true;
+  Serial.begin(115200);
+  setup_wifi();
+  inicializa_mqtt();
+  inicializa_servos();
 }
 
 void loop()
 {
-  botao.update();
-  if (botao.changed() && botao.read() == HIGH) 
-  {
-    ativacao = !ativacao; 
-    if (ativacao)
-    {
-      spinning.write(pinServo, 90); 
-      delay(50);
-    }
-    else
-    {
-      spinning.write(pinServo, 0); 
-      delay(50);
-    }
-  }
+  atualiza_mqtt();
+
+  int angulo = map(analogRead(A0), 0, 4095, 0, 180);
+  String json;
+  JsonDocument doc;
+  doc["PortaoState"] = angulo;
+  serializeJson(doc, json);
+  publica_mqtt(mqtt_pub_topic1, json);
 }
