@@ -1,12 +1,14 @@
+
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include "iot.h"
 #include "senhas.h"
+#include "atuadores.h"
 
 // Definição dos tópicos de inscrição
-#define mqtt_sub_topic1 "projetoKaue/AutoFactory/Servo/Portaoo"
+#define mqtt_sub_topic1 "projeto/teste"
 
 // Definição do ID do cliente MQTT randomico
 const String cliente_id = "ESP32Clientd" + String(random(0xffff), HEX);
@@ -104,7 +106,6 @@ void inscricao_topicos()
     client.subscribe(mqtt_sub_topic1); // LED 1
 }
 
-bool motorLigado = false;
 // Trata as mensagens recebidas
 void tratar_msg(char *topic, String msg)
 {
@@ -112,16 +113,12 @@ void tratar_msg(char *topic, String msg)
     {
         JsonDocument doc;
         deserializeJson(doc, msg);
-        estado = doc["PortaoState"];
+        bool RotacaoMotor = doc["PortaoState"];
 
-        if (estado == true)
-        {
-            motorLigado = true;
-            rotacao_servo();
-        }
-        else if (estado == false)
-        {
-            motorLigado = false;
-        }
+        if (RotacaoMotor)
+            posiciona_servo(180);
+
+        else if (!RotacaoMotor)
+            posiciona_servo(0);
     }
 }

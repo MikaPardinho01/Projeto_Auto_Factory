@@ -3,7 +3,7 @@
 #include "iot.h"
 #include "atuadores.h"
 
-#define mqtt_pub_topic1 "projetoKaue/AutoFactory/Servo/Portao"
+#define mqtt_pub_topic1 "projeto/servo/portao"
 
 unsigned long tempo_anterior = 0;
 const unsigned long intervalo = 1000;
@@ -13,21 +13,17 @@ void setup()
   Serial.begin(115200);
   setup_wifi();
   inicializa_mqtt();
-  inicializa_servo();
+  inicializa_servos();
 }
 
 void loop()
 {
   atualiza_mqtt();
-  rotacao_servo();
 
-  if (millis() - tempo_anterior >= intervalo)
-  {
-    tempo_anterior = millis();
-    String json;
-    JsonDocument doc;
-    doc["PortaoState"] = estado;
-    serializeJson(doc, json);
-    publica_mqtt(mqtt_pub_topic1, json);
-  }
+  int angulo = map(analogRead(A0), 0, 4095, 0, 180);
+  String json;
+  JsonDocument doc;
+  doc["PortaoState"] = angulo;
+  serializeJson(doc, json);
+  publica_mqtt(mqtt_pub_topic1, json);
 }

@@ -1,2 +1,2 @@
-void inicializa_servo();
-int rotacao_servo();
+void inicializa_servos();
+void posiciona_servo(int);

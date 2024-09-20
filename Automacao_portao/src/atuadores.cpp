@@ -1,45 +1,16 @@
-#include <Arduino.h>
-#include <Servo.h>
+#include <ESP32Servo.h>
 #include "atuadores.h"
-#include <Bounce2.h>
 
-#define pinServo 15
-#define pinBotao 12
+#define SERVO_PIN 15
 
-Bounce botao = Bounce();
-Servo spinning;
+Servo servoMotor; 
 
-bool ativacao = false;
-bool servoInicio = false;
-bool estado = false;
-void inicializa_servo()
+void inicializa_servos()
 {
-
-  botao.attach(pinBotao, INPUT_PULLUP);
-  spinning.attach(pinServo);
-  spinning.write(pinServo, 90);
-  delay(500);
-  servoInicio = true;
+    servoMotor.attach(SERVO_PIN, 500, 2500);
 }
 
-int rotacao_servo()
+void posiciona_servo(int angulo=0)
 {
-  botao.update();
-  if (botao.changed() && botao.read() == HIGH)
-  {
-    ativacao = !ativacao;
-    if (ativacao)
-    {
-      spinning.write(pinServo, 90);
-      delay(50);
-      estado = 1;
-    }
-    else
-    {
-      spinning.write(pinServo, 0);
-      delay(50);
-      estado = 0;
-    }
-  }
-  return estado;
+    servoMotor.write(angulo);
 }
