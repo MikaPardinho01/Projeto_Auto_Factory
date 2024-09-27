@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <Bounce2.h>
 #include "entradas.h"
 
@@ -25,4 +24,9 @@ void atualiza_botoes()
 bool botao_externo_pressionado()
 {
     return botaoExterno.fell();
+}
+
+bool botao_externo_solto()
+{
+    return botaoExterno.rose();
 }

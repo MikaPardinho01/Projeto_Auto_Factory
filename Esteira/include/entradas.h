@@ -9,3 +9,4 @@ void atualiza_botoes();
 @return Verdadeiro caso for pressionado
 */
 bool botao_externo_pressionado();
+bool botao_externo_solto();

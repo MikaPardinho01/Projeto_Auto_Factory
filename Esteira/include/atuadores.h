@@ -1,2 +1,5 @@
 void inicializa_motor();
-void rotacao_motor();
+extern bool rotacao_motor();
+
+extern unsigned long tempo_anterior;
+extern const unsigned long intervalo;
