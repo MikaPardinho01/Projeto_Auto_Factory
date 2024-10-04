@@ -1,37 +1,66 @@
 #include <Arduino.h>
-#include <Bounce2.h>
+#include <ArduinoJson.h>
+#include "iot.h"
+#include "saidas.h"
+#include "entradas.h"
 
-const int Vermelho_pin = 15;
-const int Amarelo_pin = 2;
-const int luzCentral = 4; 
-const int botao = 19; 
+#define mqtt_pub_topic1 "projetoKaue/pub/led1"
 
-bool estado_botao = LOW;
-Bounce debouncer = Bounce();
+void acao_botao_externo();
+
+unsigned long tempo_anterior = 0;
+const unsigned long intervalo = 1000;
 
 void setup()
 {
-pinMode(Vermelho_pin, OUTPUT);
-pinMode(Amarelo_pin, OUTPUT);
-pinMode(luzCentral, OUTPUT);
-pinMode(botao, INPUT_PULLUP);
-debouncer.attach(botao);
-debouncer.interval(10);
+  Serial.begin(115200);
+  setup_wifi();
+  inicializa_mqtt();
+  inicializa_entradas();
+  inicializa_saidas();
 }
 
 void loop()
 {
+  atualiza_saidas();
+  atualiza_botoes();
+  acao_botao_externo();
+  atualiza_mqtt();
 
-  digitalWrite(Vermelho_pin, HIGH);
-  digitalWrite(Amarelo_pin, LOW);
-  delay(500);  
-  digitalWrite(Vermelho_pin, LOW);
-  digitalWrite(Amarelo_pin, HIGH);
-  delay(500);
+  if (millis() - tempo_anterior > intervalo)
+  {
+    tempo_anterior = millis();
 
-  //debouncer.update();
-  //if (debouncer.fell()){
-  //estado_botao = !estado_botao;
-  //digitalWrite(luzCentral, estado_botao);
-  digitalWrite(luzCentral, HIGH);
+    String json;
+    JsonDocument doc;
+    doc["LedVeiculos"] = VermelhoState;
+    doc["LedVeiculos"] = AmareloState;
+    serializeJson(doc, json);
+    publica_mqtt(mqtt_pub_topic1, json);
+  }
+}
+
+void acao_botao_externo()
+{
+  if (botao_externo_pressionado())
+  {
+    VermelhoState = !VermelhoState;
+    AmareloState = !AmareloState;
+    if (VermelhoState && AmareloState)
+      publica_mqtt(mqtt_pub_topic1, "LIGADO");
+    else
+      publica_mqtt(mqtt_pub_topic1, "DESLIGADO");
+  }
+}
+
+void acao_botao_luz_central()
+{
+  if (botao_externo_pressionado())
+  {
+    LuzCentralState = !LuzCentralState;
+    if (LuzCentralState)
+      publica_mqtt(mqtt_pub_topic1, "LIGADO");
+    else
+      publica_mqtt(mqtt_pub_topic1, "DESLIGADO");
+  }
 }
