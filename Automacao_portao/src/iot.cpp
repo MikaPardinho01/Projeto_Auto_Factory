@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 #include "iot.h"
 #include "senhas.h"
@@ -38,12 +39,16 @@ void setup_wifi()
     Serial.println();
     Serial.print("Conectado ao WiFi com sucesso com IP: ");
     Serial.println(WiFi.localIP());
+
+    espClient.setCACert(AWS_CERT_CA);
+    espClient.setCertificate(AWS_CERT_CRT);
+    espClient.setPrivateKey(AWS_CERT_PRIVATE);
 }
 
 // Inicia a conexão MQTT
 void inicializa_mqtt()
 {
-    client.setServer(mqtt_server, mqtt_port);
+    client.setServer(AWS_IOT_ENDPOINT, mqtt_port);
     client.setCallback(callback);
 }
 // Atualiza a conexão MQTT
@@ -58,36 +63,36 @@ void atualiza_mqtt()
 // Função de callback chamada quando uma mensagem é recebida
 void callback(char *topic, byte *payload, unsigned int length)
 {
-    Serial.printf("Mensagem recebida [ %s ] \n\r", topic);
-    String msg = "";
-    for (int i = 0; i < length; i++)
-    {
-        Serial.print((char)payload[i]);
-        msg += (char)payload[i];
-    }
-    Serial.println();
-    tratar_msg(topic, msg);
+  Serial.printf("Mensagem recebida [ %s ] \n\r", topic);
+  String msg = "";
+  for (int i = 0; i < length; i++)
+  {
+    Serial.print((char)payload[i]);
+    msg += (char)payload[i];
+  }
+  Serial.println();
+  tratar_msg(topic, msg);
 }
 
 // Função de reconexão ao Broker MQTT
 void reconecta_mqtt()
 {
-    while (!client.connected())
+  while (!client.connected())
+  {
+    Serial.print("Tentando se conectar ao Broker MQTT: ");
+    Serial.println(AWS_IOT_ENDPOINT);
+    if (client.connect(THINGNAME))
     {
-        Serial.print("Tentando se conectar ao Broker MQTT: ");
-        Serial.println(mqtt_server);
-        if (client.connect(cliente_id.c_str()))
-        {
-            Serial.println("Conectado ao Broker MQTT");
-            inscricao_topicos();
-        }
-        else
-        {
-            Serial.println("Falha ao conectar ao Broker.");
-            Serial.println("Havera nova tentativa de conexao em 2 segundos");
-            delay(2000);
-        }
+      Serial.println("Conectado ao Broker MQTT");
+      inscricao_topicos();
     }
+    else
+    {
+      Serial.println("Falha ao conectar ao Broker.");
+      Serial.println("Havera nova tentativa de conexao em 2 segundos");
+      delay(2000);
+    }
+  }
 }
 
 // Publica uma mensagem no tópico MQTT
@@ -120,5 +125,7 @@ void tratar_msg(char *topic, String msg)
 
         else if (!RotacaoMotor)
             posiciona_servo(0);
+        else if (msg == "muda")
+            RotacaoMotor = !RotacaoMotor;
     }
 }

@@ -1,4 +1,7 @@
 .pio/build/esp32dev/src/atuadores.cpp.o: src/atuadores.cpp \
+ .pio/libdeps/esp32dev/ESP32Servo/src/ESP32Servo.h \
+ .pio/libdeps/esp32dev/ESP32Servo/src/ESP32PWM.h \
+ C:/Users/54061211897/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-ledc.h \
  C:/Users/54061211897/.platformio/packages/framework-arduinoespressif32/cores/esp32/Arduino.h \
  C:/Users/54061211897/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp_arduino_version.h \
  C:/Users/54061211897/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/FreeRTOS.h \
@@ -133,4 +136,4 @@
  C:/Users/54061211897/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_hw_support/include/soc/esp32/spiram.h \
  C:/Users/54061211897/.platformio/packages/framework-arduinoespressif32/cores/esp32/io_pin_remap.h \
  C:/Users/54061211897/.platformio/packages/framework-arduinoespressif32/cores/esp32/Arduino.h \
- .pio/libdeps/esp32dev/Stepper/src/Stepper.h include/atuadores.h
+ include/atuadores.h .pio/libdeps/esp32dev/Stepper/src/Stepper.h

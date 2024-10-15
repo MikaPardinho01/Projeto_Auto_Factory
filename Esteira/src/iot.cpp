@@ -112,14 +112,21 @@ void tratar_msg(char *topic, String msg)
     {
         JsonDocument doc;
         deserializeJson(doc, msg);
-        bool estado = doc["Esteira"];
-        if (estado)
+        bool RotacaoMotor = doc["EsteiraState"];
+
+        if (RotacaoMotor)
         {
-            estado = true;
+            motorLigado = true;
+            Serial.println("Motor de passo ligado");
         }
-        else if (!estado)
+        else
         {
-            estado = false;
+            motorLigado = false;
+            digitalWrite(IN1, LOW);
+            digitalWrite(IN2, LOW);
+            digitalWrite(IN3, LOW);
+            digitalWrite(IN4, LOW);
+            Serial.println("Motor de passo desligado");
         }
     }
 }

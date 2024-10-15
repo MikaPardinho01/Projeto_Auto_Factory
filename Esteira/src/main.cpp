@@ -19,10 +19,9 @@ void setup()
 
 void loop()
 {
-  rotacao_motor();
   atualiza_mqtt();
 
-  bool rotacao = rotacao_motor();
+  int rotacao = rotacao_motor_passo();
   String json;
   JsonDocument doc;
   doc["Esteira"] = rotacao;
